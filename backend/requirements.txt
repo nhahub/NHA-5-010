@@ -1,0 +1,14 @@
+fastapi>=0.142.2
+uvicorn>=0.54.0
+pydantic
+scikit-learn
+pandas
+joblib
+numpy
+google-genai
+python-dotenv>=1.2.4
+torch>=2.2.0
+torchvision>=0.17.0
+pillow>=10.0.0
+python-multipart>=0.0.9
+matplotlib>=3.8.0

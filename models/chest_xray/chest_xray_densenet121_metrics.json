@@ -1,0 +1,187 @@
+{
+  "test_loss": 0.9491782319406881,
+  "test_macro_roc_auc": 0.8069929679267173,
+  "per_class_test_metrics_threshold_0_5": [
+    {
+      "condition": "Cardiomegaly",
+      "positive_count": 456,
+      "prevalence_pct": 2.738,
+      "ROC_AUC": 0.9176508552062957,
+      "Average_Precision": 0.35107291599670815,
+      "precision_at_0.5": 0.16612072999532054,
+      "sensitivity_at_0.5": 0.7785087719298246,
+      "specificity_at_0.5": 0.8899864180763057,
+      "F1_at_0.5": 0.2738141149247975
+    },
+    {
+      "condition": "Pneumonia",
+      "positive_count": 210,
+      "prevalence_pct": 1.261,
+      "ROC_AUC": 0.7364913820064635,
+      "Average_Precision": 0.04186273223384332,
+      "precision_at_0.5": 0.03415061295971979,
+      "sensitivity_at_0.5": 0.5571428571428572,
+      "specificity_at_0.5": 0.7987715884213087,
+      "F1_at_0.5": 0.06435643564356436
+    },
+    {
+      "condition": "Effusion",
+      "positive_count": 1897,
+      "prevalence_pct": 11.391,
+      "ROC_AUC": 0.8718945207922733,
+      "Average_Precision": 0.47360099886853946,
+      "precision_at_0.5": 0.3327476389193938,
+      "sensitivity_at_0.5": 0.7986294148655773,
+      "specificity_at_0.5": 0.7941315985633937,
+      "F1_at_0.5": 0.4697674418604651
+    },
+    {
+      "condition": "Infiltration",
+      "positive_count": 2961,
+      "prevalence_pct": 17.78,
+      "ROC_AUC": 0.7102659557819905,
+      "Average_Precision": 0.35226654410566616,
+      "precision_at_0.5": 0.3190218405824155,
+      "sensitivity_at_0.5": 0.5771698750422155,
+      "specificity_at_0.5": 0.7335865040531658,
+      "F1_at_0.5": 0.4109160855974994
+    },
+    {
+      "condition": "Atelectasis",
+      "positive_count": 1701,
+      "prevalence_pct": 10.214,
+      "ROC_AUC": 0.798662125846563,
+      "Average_Precision": 0.31026331316410755,
+      "precision_at_0.5": 0.23716189729517836,
+      "sensitivity_at_0.5": 0.7113462669018225,
+      "specificity_at_0.5": 0.7397177823848057,
+      "F1_at_0.5": 0.3557254152579744
+    }
+  ],
+  "per_class_test_metrics_validation_thresholds": [
+    {
+      "condition": "Cardiomegaly",
+      "threshold": 0.939453125,
+      "sensitivity": 0.3925438596491228,
+      "specificity": 0.9840103716508211,
+      "precision": 0.408675799086758,
+      "F1": 0.4004474272930649,
+      "TP": 179,
+      "FP": 259,
+      "TN": 15939,
+      "FN": 277
+    },
+    {
+      "condition": "Pneumonia",
+      "threshold": 0.7666015625,
+      "sensitivity": 0.20952380952380953,
+      "specificity": 0.9617489661882753,
+      "precision": 0.06537890044576523,
+      "F1": 0.09966024915062288,
+      "TP": 44,
+      "FP": 629,
+      "TN": 15815,
+      "FN": 166
+    },
+    {
+      "condition": "Effusion",
+      "threshold": 0.78955078125,
+      "sensitivity": 0.5614127569847127,
+      "specificity": 0.9170563122585892,
+      "precision": 0.46526867627785057,
+      "F1": 0.5088389870998566,
+      "TP": 1065,
+      "FP": 1224,
+      "TN": 13533,
+      "FN": 832
+    },
+    {
+      "condition": "Infiltration",
+      "threshold": 0.54931640625,
+      "sensitivity": 0.5173927727119216,
+      "specificity": 0.7879208354633754,
+      "precision": 0.345356176735798,
+      "F1": 0.4142219818845478,
+      "TP": 1532,
+      "FP": 2904,
+      "TN": 10789,
+      "FN": 1429
+    },
+    {
+      "condition": "Atelectasis",
+      "threshold": 0.64990234375,
+      "sensitivity": 0.5379188712522046,
+      "specificity": 0.8476559887647963,
+      "precision": 0.28656435953648607,
+      "F1": 0.37392725786677566,
+      "TP": 915,
+      "FP": 2278,
+      "TN": 12675,
+      "FN": 786
+    }
+  ],
+  "training_history": {
+    "train_loss": [
+      0.9822542833665702,
+      0.9191415014138533,
+      0.8825347046941074,
+      0.8439977612265592,
+      0.7823183168623292,
+      0.7044308294970014,
+      0.6290327733345757,
+      0.5840966426275731
+    ],
+    "val_loss": [
+      0.929405485251115,
+      0.9016121389219857,
+      0.9067213859476991,
+      0.9054367992959075,
+      0.9202854805337413,
+      1.007671638631589,
+      1.16749228341901,
+      1.2786929337613349
+    ],
+    "val_macro_roc_auc": [
+      0.7902919054238264,
+      0.7929976727315836,
+      0.7931503277926661,
+      0.8017847546861109,
+      0.8060644847724703,
+      0.800039337028079,
+      0.799654740036116,
+      0.7957428806961314
+    ]
+  },
+  "split_summary": [
+    {
+      "split": "train",
+      "images": 79006,
+      "patients": 21563,
+      "Cardiomegaly prevalence %": 2.438,
+      "Pneumonia prevalence %": 1.196,
+      "Effusion prevalence %": 12.051,
+      "Infiltration prevalence %": 17.792,
+      "Atelectasis prevalence %": 10.311
+    },
+    {
+      "split": "validation",
+      "images": 16460,
+      "patients": 4621,
+      "Cardiomegaly prevalence %": 2.369,
+      "Pneumonia prevalence %": 1.203,
+      "Effusion prevalence %": 11.476,
+      "Infiltration prevalence %": 17.327,
+      "Atelectasis prevalence %": 10.255
+    },
+    {
+      "split": "test",
+      "images": 16654,
+      "patients": 4621,
+      "Cardiomegaly prevalence %": 2.738,
+      "Pneumonia prevalence %": 1.261,
+      "Effusion prevalence %": 11.391,
+      "Infiltration prevalence %": 17.78,
+      "Atelectasis prevalence %": 10.214
+    }
+  ]
+}

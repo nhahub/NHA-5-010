@@ -1,0 +1,55 @@
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+**/.venv/
+**/venv/
+**/env/
+
+# Python cache & artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Secrets and environment configurations
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+*secret*
+*.token
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

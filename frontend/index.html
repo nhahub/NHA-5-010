@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MediVision AI — Multimodal Clinical Decision Support Platform: Tabular Predictive Analytics + Computer Vision Chest X-ray Diagnostics.">
+    <title>MediVision AI — Multimodal Clinical Intelligence Platform</title>
+    <link rel="icon" type="image/png" href="../assets/MediVision - AI.png" onerror="this.href='assets/MediVision - AI.png'">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#EA580C',
+                        'primary-dark': '#C2410C',
+                        'primary-light': '#FFF7ED',
+                        secondary: '#F97316',
+                        accent: '#9A3412',
+                        danger: '#EF4444',
+                        success: '#10B981',
+                        warning: '#F59E0B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #FAF7F2; 
+            background-image: radial-gradient(at top right, rgba(234, 88, 12, 0.05) 0%, transparent 60%), radial-gradient(at bottom left, rgba(249, 115, 22, 0.04) 0%, transparent 50%);
+            color: #1F2937; 
+            min-height: 100vh;
+        }
+        .card { background: white; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 6px 18px rgba(234,88,12,0.03); padding: 1.5rem; transition: all 0.25s ease; }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.07), 0 12px 28px rgba(234,88,12,0.07); }
+        .glass-header { background: linear-gradient(135deg, #C2410C 0%, #EA580C 50%, #F97316 100%); backdrop-filter: blur(12px); }
+        .progress-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        input:focus, select:focus { border-color: #EA580C !important; box-shadow: 0 0 0 3px rgba(234,88,12,0.18) !important; outline: none; }
+        .btn-primary { background: linear-gradient(135deg, #EA580C, #C2410C); transition: all 0.25s ease; }
+        .btn-primary:hover { background: linear-gradient(135deg, #C2410C, #9A3412); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(234,88,12,0.35); }
+        .pill-btn { transition: all 0.2s ease; }
+        .pill-btn:hover { transform: translateY(-1px); }
+        .dropzone-active { border-color: #EA580C !important; background-color: #FFF7ED !important; }
+        
+        /* Floating AI assistant */
+        .mv-chat-launcher { position: fixed; right: 24px; bottom: 24px; z-index: 1000; width: 58px; height: 58px; border: 0; border-radius: 9999px; color: #fff; background: linear-gradient(135deg,#EA580C,#C2410C); box-shadow: 0 8px 24px rgba(194,65,12,.35); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s, box-shadow .2s; }
+        .mv-chat-launcher:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(194,65,12,.42); }
+        .mv-chat-panel { position: fixed; right: 24px; bottom: 92px; z-index: 1000; width: min(420px, calc(100vw - 32px)); height: min(600px, calc(100vh - 115px)); background:#fff; border:1px solid #fed7aa; border-radius:20px; box-shadow:0 18px 60px rgba(41,24,12,.22); display:flex; flex-direction:column; overflow:hidden; }
+        .mv-chat-messages { flex:1; overflow-y:auto; padding:16px; background:linear-gradient(180deg,#fffaf5 0%,#fff 100%); }
+        .mv-chat-bubble { max-width:88%; padding:10px 12px; border-radius:14px; font-size:13px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .mv-chat-user { margin-left:auto; background:#EA580C; color:#fff; border-bottom-right-radius:4px; }
+        .mv-chat-assistant { margin-right:auto; background:#fff; color:#374151; border:1px solid #f3e8df; border-bottom-left-radius:4px; }
+        .mv-chat-panel[dir="rtl"] .mv-chat-user { margin-left:0; margin-right:auto; border-bottom-right-radius:14px; border-bottom-left-radius:4px; }
+        .mv-chat-panel[dir="rtl"] .mv-chat-assistant { margin-right:0; margin-left:auto; border-bottom-left-radius:14px; border-bottom-right-radius:4px; }
+        
+        @media print {
+            header, footer, nav, button, .mv-chat-launcher, .mv-chat-panel, .no-print { display: none !important; }
+            body { background: white !important; }
+            .card { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- Sticky Top Navigation Bar -->
+        <header class="glass-header text-white shadow-lg sticky top-0 z-50">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+                <!-- Brand Title -->
+                <div class="flex items-center space-x-3 cursor-pointer select-none" @click="currentView = 'landing'">
+                    <img src="../assets/MediVision - AI.png" onerror="this.src='assets/MediVision - AI.png'" alt="MediVision AI Logo" class="h-10 w-10 sm:h-11 sm:w-11 rounded-xl shadow-md bg-white p-1 object-contain">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-display font-bold tracking-tight leading-tight flex items-center">
+                            MediVision <span class="font-light text-orange-200 ml-1">AI</span>
+                            <span class="ml-2 text-[10px] font-semibold uppercase tracking-wider bg-white/20 text-orange-100 px-2 py-0.5 rounded-full border border-white/25 hidden md:inline-block">Multimodal</span>
+                        </h1>
+                        <p class="text-[11px] text-orange-100 font-normal tracking-wide hidden sm:block">Tabular Risk Analytics + Chest X-ray Vision Diagnostics</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center space-x-1 sm:space-x-2 bg-black/15 p-1 rounded-xl border border-white/20 backdrop-blur-md">
+                    <button @click="currentView = 'landing'" :class="currentView === 'landing' ? 'bg-white text-primary font-bold shadow-sm' : 'text-orange-100 hover:text-white hover:bg-white/10'" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5">
+                        <i class="fas fa-house"></i>
+                        <span class="hidden sm:inline">Overview</span>
+                    </button>
+                    <button @click="currentView = 'tabular'" :class="currentView === 'tabular' ? 'bg-white text-primary font-bold shadow-sm' : 'text-orange-100 hover:text-white hover:bg-white/10'" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Tabular Analytics</span>
+                    </button>
+                    <button @click="currentView = 'vision'" :class="currentView === 'vision' ? 'bg-white text-primary font-bold shadow-sm' : 'text-orange-100 hover:text-white hover:bg-white/10'" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center space-x-1.5">
+                        <i class="fas fa-lungs"></i>
+                        <span>Chest X-ray Vision</span>
+                    </button>
+                </nav>
+
+                <!-- Backend Connectivity Status Pill -->
+                <div class="flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full border backdrop-blur-sm transition select-none cursor-pointer"
+                     :class="backendConnected === true ? 'bg-emerald-500/20 border-emerald-300/40 text-emerald-100' : (backendConnected === false ? 'bg-red-500/25 border-red-300/40 text-red-100' : 'bg-white/15 border-white/25 text-white')"
+                     :title="backendConnected === false ? 'Click to retry connection to ' + apiBase : 'Backend active at ' + apiBase"
+                     @click="checkBackendStatus">
+                    <span class="w-2.5 h-2.5 rounded-full" 
+                          :class="backendConnected === true ? 'bg-emerald-300 animate-pulse' : (backendConnected === false ? 'bg-red-400' : 'bg-amber-300 animate-ping')"></span>
+                    <span class="font-semibold hidden sm:inline">
+                        {{ backendConnected === true ? 'Backend Connected' : (backendConnected === false ? 'Offline (Click to retry)' : 'Checking...') }}
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Backend Offline Alert Banner (if disconnected) -->
+        <div v-if="backendConnected === false" class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full no-print fade-in">
+            <div class="bg-amber-50 border border-amber-300/80 text-amber-900 px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm text-xs sm:text-sm">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fas fa-triangle-exclamation text-amber-600 text-lg shrink-0"></i>
+                    <div>
+                        <strong>Backend API not detected at <code class="bg-amber-100/90 text-amber-950 font-mono px-1 py-0.5 rounded">{{ apiBase }}</code>.</strong>
+                        <span class="ml-1 text-amber-800">Please start the server with <code class="font-bold bg-amber-100 px-1.5 py-0.5 rounded">start_backend.bat</code>.</span>
+                    </div>
+                </div>
+                <button @click="checkBackendStatus" class="self-start sm:self-auto bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center space-x-1.5 shadow-2xs">
+                    <i class="fas fa-rotate-right"></i>
+                    <span>Retry Connection</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 1: ENHANCED & UNCLUTTERED HERO LANDING PAGE -->
+        <!-- ========================================================================= -->
+        <main v-if="currentView === 'landing'" class="flex-grow max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full fade-in space-y-12">
+            
+            <!-- Hero Container -->
+            <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-700 text-white p-8 sm:p-12 lg:p-14 shadow-xl border border-orange-400/25">
+                <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-64 h-64 bg-orange-300/15 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
+                    
+                    <!-- Left Hero Content -->
+                    <div class="w-full lg:w-7/12 space-y-5 text-left">
+                        <div class="inline-flex items-center space-x-2 bg-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/25 text-xs font-semibold uppercase tracking-wider text-orange-100">
+                            <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                            <span>Clinical Decision Support Platform</span>
+                            <span class="text-white/40">&bull;</span>
+                            <span>Dual-Modality AI</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-5xl font-display font-extrabold tracking-tight leading-tight">
+                            Precision Diagnostics <br>
+                            <span class="text-orange-200">Across Labs & Medical Imaging</span>
+                        </h1>
+
+                        <p class="text-sm sm:text-base text-orange-100 font-normal leading-relaxed max-w-xl">
+                            Empowering physicians and healthcare researchers with simultaneous <strong>chronic disease biomarker profiling</strong> (CDC NHANES) and <strong>deep learning chest radiograph diagnostics</strong> (DenseNet-121) augmented with <strong>Grad-CAM visual explainability</strong>.
+                        </p>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-2 flex flex-wrap items-center gap-3.5">
+                            <button @click="currentView = 'vision'" class="bg-white text-primary hover:bg-orange-50 font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg text-sm sm:text-base transition transform hover:-translate-y-0.5 flex items-center space-x-2">
+                                <i class="fas fa-lungs text-base"></i>
+                                <span>Launch Chest X-ray Vision</span>
+                                <i class="fas fa-arrow-right text-xs ml-1"></i>
+                            </button>
+                            <button @click="currentView = 'tabular'" class="bg-orange-800/60 hover:bg-orange-800/80 text-white font-bold px-6 py-3 rounded-xl border border-white/20 backdrop-blur-md shadow-sm text-sm sm:text-base transition transform hover:-translate-y-0.5 flex items-center space-x-2">
+                                <i class="fas fa-chart-line text-base"></i>
+                                <span>Launch Biomarker Analytics</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Visual Card: Interactive Split Showcase -->
+                    <div class="w-full lg:w-5/12 flex justify-center">
+                        <div class="w-full max-w-md bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-2xl text-left space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-white/10 text-xs">
+                                <span class="font-bold text-orange-200 flex items-center">
+                                    <i class="fas fa-circle-check text-emerald-400 mr-1.5"></i> Multimodal Diagnostic Pipeline
+                                </span>
+                                <span class="text-[10px] text-white/70 font-mono">v2.0 Active</span>
+                            </div>
+
+                            <!-- Showcase Item 1: Vision Preview -->
+                            <div class="bg-white/10 hover:bg-white/15 transition p-3 rounded-xl border border-white/15 flex items-center space-x-3 cursor-pointer" @click="currentView = 'vision'">
+                                <div class="w-12 h-12 rounded-lg bg-black/40 overflow-hidden flex items-center justify-center shrink-0 border border-white/20">
+                                    <i class="fas fa-x-ray text-orange-300 text-xl"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-bold text-white truncate">Chest X-ray Screening</h4>
+                                        <span class="text-[10px] font-bold bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30">DenseNet-121</span>
+                                    </div>
+                                    <p class="text-[11px] text-orange-100 truncate mt-0.5">5 Thoracic Conditions &bull; Grad-CAM Active</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-xs text-white/50"></i>
+                            </div>
+
+                            <!-- Showcase Item 2: Tabular Preview -->
+                            <div class="bg-white/10 hover:bg-white/15 transition p-3 rounded-xl border border-white/15 flex items-center space-x-3 cursor-pointer" @click="currentView = 'tabular'">
+                                <div class="w-12 h-12 rounded-lg bg-black/40 overflow-hidden flex items-center justify-center shrink-0 border border-white/20">
+                                    <i class="fas fa-heart-pulse text-red-400 text-xl"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-bold text-white truncate">Predictive Biomarker Suite</h4>
+                                        <span class="text-[10px] font-bold bg-amber-400/20 text-amber-200 px-2 py-0.5 rounded-full border border-amber-400/30">CDC NHANES</span>
+                                    </div>
+                                    <p class="text-[11px] text-orange-100 truncate mt-0.5">17 Biomarkers &bull; 6 Chronic Disease Targets</p>
+                                </div>
+                                <i class="fas fa-chevron-right text-xs text-white/50"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 4 Clean Metric Highlights Row -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="card p-5 border border-orange-100/80 hover:border-primary/40 text-left">
+                    <div class="text-2xl sm:text-3xl font-display font-extrabold text-primary">0.934</div>
+                    <div class="text-xs font-bold text-gray-800 mt-1">Peak Model ROC-AUC</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Diabetes risk discrimination on NHANES</div>
+                </div>
+
+                <div class="card p-5 border border-orange-100/80 hover:border-primary/40 text-left">
+                    <div class="text-2xl sm:text-3xl font-display font-extrabold text-gray-900">5 Pathologies</div>
+                    <div class="text-xs font-bold text-gray-800 mt-1">Thoracic Vision Coverage</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Cardiomegaly, Effusion, Pneumonia, etc.</div>
+                </div>
+
+                <div class="card p-5 border border-orange-100/80 hover:border-primary/40 text-left">
+                    <div class="text-2xl sm:text-3xl font-display font-extrabold text-gray-900">17 Biomarkers</div>
+                    <div class="text-xs font-bold text-gray-800 mt-1">Physiological Laboratory Panel</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Lipids, glycemia, BMI, and demographics</div>
+                </div>
+
+                <div class="card p-5 border border-orange-100/80 hover:border-primary/40 text-left">
+                    <div class="text-2xl sm:text-3xl font-display font-extrabold text-emerald-600">&lt; 0.5s</div>
+                    <div class="text-xs font-bold text-gray-800 mt-1">Real-Time Inference</div>
+                    <div class="text-[11px] text-gray-400 mt-0.5">Instant decision support with Grad-CAM</div>
+                </div>
+            </section>
+
+            <!-- Two Distinct Modality Showcase Cards -->
+            <section class="space-y-6">
+                <div class="text-center max-w-xl mx-auto space-y-1.5">
+                    <span class="text-xs font-bold uppercase tracking-wider text-primary bg-orange-100/70 px-3 py-1 rounded-full">Dual Modality Framework</span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-gray-800">Explore MediVision Diagnostic Engines</h2>
+                    <p class="text-xs sm:text-sm text-gray-500">Select an engine below to access specialized clinical workflows.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Vision Engine Card -->
+                    <div class="card p-7 border-t-4 border-primary flex flex-col justify-between hover:shadow-lg transition text-left">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200/80 flex items-center justify-center text-primary text-2xl shadow-2xs">
+                                    <i class="fas fa-lungs"></i>
+                                </div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider bg-orange-100 text-primary-dark px-2.5 py-1 rounded-full">Computer Vision</span>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg sm:text-xl font-display font-bold text-gray-900">Chest X-ray Deep Learning Diagnostics</h3>
+                                <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
+                                    Automated multi-label thoracic screening using fine-tuned DenseNet-121. Highlights localized anatomical regions of interest with Grad-CAM heatmaps.
+                                </p>
+                            </div>
+
+                            <!-- Pathology Pills -->
+                            <div class="flex flex-wrap gap-1.5 pt-1">
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-heart text-red-500 mr-1 text-[10px]"></i> Cardiomegaly
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-water text-sky-500 mr-1 text-[10px]"></i> Effusion
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-virus-covid text-amber-500 mr-1 text-[10px]"></i> Pneumonia
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-cloud text-indigo-500 mr-1 text-[10px]"></i> Infiltration
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-lungs text-purple-500 mr-1 text-[10px]"></i> Atelectasis
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-100 mt-6 flex items-center justify-between">
+                            <span class="text-xs text-gray-400 font-mono">NIH ChestX-ray14 &bull; F1 Thresholds</span>
+                            <button @click="currentView = 'vision'" class="btn-primary text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-lg flex items-center space-x-1.5">
+                                <span>Open Vision Suite</span>
+                                <i class="fas fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabular Predictive Engine Card -->
+                    <div class="card p-7 border-t-4 border-amber-600 flex flex-col justify-between hover:shadow-lg transition text-left">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 text-2xl shadow-2xs">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">Predictive Analytics</span>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg sm:text-xl font-display font-bold text-gray-900">Biomarker Risk Intelligence Engine</h3>
+                                <p class="text-xs sm:text-sm text-gray-600 mt-1 leading-relaxed">
+                                    Stratifies 6 major chronic conditions from 17 CDC NHANES clinical lab and examination indicators using HistGradientBoosting algorithms.
+                                </p>
+                            </div>
+
+                            <!-- Disease Pills -->
+                            <div class="flex flex-wrap gap-1.5 pt-1">
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-droplet text-amber-500 mr-1 text-[10px]"></i> Diabetes
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-heart-pulse text-rose-500 mr-1 text-[10px]"></i> Hypertension
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-heart-circle-bolt text-red-600 mr-1 text-[10px]"></i> Heart Disease
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-brain text-purple-600 mr-1 text-[10px]"></i> Stroke
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-bone text-orange-500 mr-1 text-[10px]"></i> Arthritis
+                                </span>
+                                <span class="text-[11px] font-semibold bg-gray-50 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-100 flex items-center">
+                                    <i class="fas fa-lungs text-sky-500 mr-1 text-[10px]"></i> Asthma
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-100 mt-6 flex items-center justify-between">
+                            <span class="text-xs text-gray-400 font-mono">17 Markers &bull; WHO BMI</span>
+                            <button @click="currentView = 'tabular'" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-lg transition flex items-center space-x-1.5 shadow-2xs">
+                                <span>Open Tabular Suite</span>
+                                <i class="fas fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Clinical Governance Banner -->
+            <section class="card bg-orange-50/40 border border-orange-200/60 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-left">
+                <div class="flex items-start space-x-3.5">
+                    <i class="fas fa-shield-heart text-2xl text-primary mt-0.5 shrink-0"></i>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">Clinical Decision Support & Ethical AI Scope</h4>
+                        <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                            MediVision AI is an investigational decision-support aid. Model outputs represent statistical estimates and do not replace professional radiological review or independent clinical judgment.
+                        </p>
+                    </div>
+                </div>
+                <button @click="currentView = 'vision'" class="shrink-0 btn-primary text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm">
+                    Enter Diagnostics →
+                </button>
+            </section>
+
+        </main>
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 2: TABULAR PREDICTIVE HEALTH ANALYTICS -->
+        <!-- ========================================================================= -->
+        <main v-show="currentView === 'tabular'" class="flex-grow max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex flex-col lg:flex-row gap-6 items-stretch fade-in">
+            <!-- Left Column: Biomarker Form -->
+            <div class="w-full lg:w-[44%] xl:w-[43%] flex flex-col shrink-0">
+                <div class="card border-t-4 border-primary">
+                    <div class="flex items-center justify-between gap-3 mb-3.5 pb-2.5 border-b border-gray-100">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-display font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-clipboard-list text-primary mr-2.5"></i> Patient Biomarkers
+                            </h2>
+                            <p class="text-xs text-gray-500 mt-0.5">17 CDC NHANES clinical indicators</p>
+                        </div>
+                        <div class="flex items-center space-x-2 shrink-0">
+                            <button type="button" @click="fillSampleData" title="Load High Risk Profile" class="pill-btn text-xs sm:text-sm text-primary font-semibold bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-lg border border-orange-200 transition">
+                                <i class="fas fa-triangle-exclamation mr-1.5 text-orange-500 text-xs"></i> High-Risk
+                            </button>
+                            <button type="button" @click="fillHealthyData" title="Load Healthy Baseline" class="pill-btn text-xs sm:text-sm text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition">
+                                <i class="fas fa-heart mr-1.5 text-emerald-500 text-xs"></i> Healthy
+                            </button>
+                        </div>
+                    </div>
+
+                    <form @submit.prevent="submitPrediction" class="space-y-4">
+                        <!-- Demographics -->
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-bold text-accent uppercase tracking-wider mb-2 border-b border-orange-200/60 pb-1.5 flex items-center justify-between">
+                                <span class="flex items-center"><i class="fas fa-id-card text-primary mr-2 text-sm"></i> Demographics</span>
+                                <span class="text-xs font-normal text-gray-400 lowercase">5 markers</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Age</label>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" min="1" max="120" v-model.number="form.age" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-5">yr</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Gender</label>
+                                    <select v-model.number="form.gender" class="w-28 sm:w-32 text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs">
+                                        <option value="1">Male</option>
+                                        <option value="2">Female</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Ethnicity</label>
+                                    <select v-model.number="form.ethnicity" class="w-36 sm:w-40 text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs">
+                                        <option value="1">Mexican Am.</option>
+                                        <option value="2">Other Hispanic</option>
+                                        <option value="3">White (NH)</option>
+                                        <option value="4">Black (NH)</option>
+                                        <option value="6">Asian (NH)</option>
+                                        <option value="7">Other/Mixed</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Education</label>
+                                    <select v-model.number="form.education" class="w-36 sm:w-40 text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs">
+                                        <option value="1">&lt; 9th Grade</option>
+                                        <option value="2">9-11th Grade</option>
+                                        <option value="3">High School</option>
+                                        <option value="4">Some College</option>
+                                        <option value="5">College Grad</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition sm:col-span-2">
+                                    <div class="flex items-center space-x-2">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Poverty Ratio</label>
+                                        <span class="text-xs text-gray-400">(&lt;1.0 = poverty)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="0.01" min="0" max="5" v-model.number="form.income_poverty_ratio" class="w-24 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-6">ratio</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Anthropometrics -->
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-bold text-accent uppercase tracking-wider mb-2 border-b border-orange-200/60 pb-1.5 flex items-center justify-between">
+                                <span class="flex items-center"><i class="fas fa-ruler text-primary mr-2 text-sm"></i> Anthropometrics</span>
+                                <span class="text-xs font-normal text-gray-400 lowercase">4 markers</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Height</label>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="0.1" v-model.number="form.height_cm" @input="calcBMI" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-5">cm</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Weight</label>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="0.1" v-model.number="form.weight_kg" @input="calcBMI" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-5">kg</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/40 px-3 py-2 rounded-lg border border-orange-200/80 transition">
+                                    <div class="flex items-center space-x-2">
+                                        <label class="text-xs sm:text-sm font-bold text-orange-950 whitespace-nowrap">BMI</label>
+                                        <span v-if="form.bmi" :class="bmiBadgeClass" class="text-[10px] sm:text-xs px-1.5 py-0.5 rounded font-bold">{{ bmiCategory }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="0.1" v-model.number="form.bmi" class="w-20 text-right text-xs sm:text-sm font-bold py-1.5 px-2 border border-orange-200 rounded-md bg-white text-orange-950 shadow-2xs" readonly>
+                                        <span class="text-xs text-gray-400 w-7">kg/m²</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Waist Circ.</label>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="0.1" v-model.number="form.waist_cm" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-5">cm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Laboratory Panel -->
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-bold text-accent uppercase tracking-wider mb-2 border-b border-orange-200/60 pb-1.5 flex items-center justify-between">
+                                <span class="flex items-center"><i class="fas fa-vial text-primary mr-2 text-sm"></i> Laboratory Panel</span>
+                                <span class="text-xs font-normal text-gray-400 lowercase">6 markers</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">HbA1c</label>
+                                        <span class="text-[10px] text-gray-400">&lt;5.7% norm</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="0.1" v-model.number="form.hba1c" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-5">%</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Glucose</label>
+                                        <span class="text-[10px] text-gray-400">fasting</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="1" v-model.number="form.fasting_glucose" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-8">mg/dL</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Total Chol</label>
+                                        <span class="text-[10px] text-gray-400">&lt;200 norm</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="1" v-model.number="form.total_cholesterol" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-8">mg/dL</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">Triglycerides</label>
+                                        <span class="text-[10px] text-gray-400">&lt;150 norm</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="1" v-model.number="form.triglycerides" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-8">mg/dL</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">HDL <span class="text-emerald-600 font-semibold">(Good)</span></label>
+                                        <span class="text-[10px] text-gray-400">&gt;40 norm</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="1" v-model.number="form.hdl" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-8">mg/dL</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <div class="flex flex-col">
+                                        <label class="text-xs sm:text-sm font-medium text-gray-700 leading-tight">LDL <span class="text-rose-600 font-semibold">(Bad)</span></label>
+                                        <span class="text-[10px] text-gray-400">&lt;100 norm</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" step="1" v-model.number="form.ldl" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" required>
+                                        <span class="text-xs text-gray-400 w-8">mg/dL</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lifestyle -->
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-bold text-accent uppercase tracking-wider mb-2 border-b border-orange-200/60 pb-1.5 flex items-center justify-between">
+                                <span class="flex items-center"><i class="fas fa-running text-primary mr-2 text-sm"></i> Lifestyle Factors</span>
+                                <span class="text-xs font-normal text-gray-400 lowercase">2 markers</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Smoker?</label>
+                                    <select v-model.number="form.ever_smoked" class="w-28 sm:w-32 text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs">
+                                        <option value="1">Yes</option>
+                                        <option value="2">No</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between bg-orange-50/25 px-3 py-2 rounded-lg border border-orange-100/80 hover:border-orange-300 transition">
+                                    <label class="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Sedentary</label>
+                                    <div class="flex items-center space-x-1.5">
+                                        <input type="number" v-model.number="form.sedentary_minutes" class="w-20 text-right text-xs sm:text-sm font-semibold py-1.5 px-2 border border-gray-200 rounded-md bg-white shadow-2xs" placeholder="360" required>
+                                        <span class="text-xs text-gray-400 w-8">min/d</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" :disabled="loading" class="w-full btn-primary text-white font-bold py-3 px-5 rounded-xl shadow-md text-sm sm:text-base flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed transition mt-2">
+                            <span v-if="!loading"><i class="fas fa-wand-magic-sparkles mr-2 text-sm sm:text-base"></i> Generate Risk Report</span>
+                            <span v-else><i class="fas fa-circle-notch fa-spin mr-2 text-orange-200"></i> Analyzing Biomarkers...</span>
+                        </button>
+                        <p v-if="error" class="text-danger text-xs sm:text-sm text-center font-semibold mt-2">{{ error }}</p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Results Dashboard -->
+            <div class="w-full lg:w-[56%] xl:w-[57%] lg:flex-1 flex flex-col min-w-0">
+                <!-- Awaiting State -->
+                <div v-if="!results" class="card h-full flex flex-col items-center justify-center text-center p-8 sm:p-10 border border-orange-100">
+                    <div class="relative mb-6">
+                        <div class="w-24 h-24 rounded-2xl bg-orange-50 border-2 border-orange-200/80 p-2.5 shadow-inner flex items-center justify-center">
+                            <img src="../assets/MediVision - AI.png" onerror="this.src='assets/MediVision - AI.png'" alt="MediVision AI" class="w-20 h-20 object-contain drop-shadow">
+                        </div>
+                        <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 bg-primary"></span>
+                        </span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-gray-800 mb-2">Predictive Health Engine Ready</h2>
+                    <p class="text-sm sm:text-base text-gray-500 max-w-lg mb-6 leading-relaxed">
+                        Input clinical parameters on the left or click <strong class="text-primary font-semibold">"High-Risk"</strong> or <strong class="text-emerald-600 font-semibold">"Healthy"</strong> presets to generate an instant 6-disease risk analysis profile.
+                    </p>
+
+                    <!-- Chronic Disease Capabilities Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-xl text-left mb-6">
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fa-solid fa-droplet text-amber-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Diabetes</p>
+                                <p class="text-xs text-gray-400">AUC 0.934</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fa-solid fa-heart-pulse text-rose-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Hypertension</p>
+                                <p class="text-xs text-gray-400">AUC 0.811</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-orange-200/60 bg-orange-50/40 flex items-center space-x-3 shadow-2xs">
+                            <img src="../assets/heart_disease.png" onerror="this.src='assets/heart_disease.png'" alt="Heart Disease" class="w-7 h-7 object-contain rounded">
+                            <div>
+                                <p class="text-xs sm:text-sm font-bold text-gray-800">Heart Disease</p>
+                                <p class="text-xs text-orange-600 font-semibold">AUC 0.810</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fa-solid fa-brain text-purple-600 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Stroke</p>
+                                <p class="text-xs text-gray-400">AUC 0.784</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fa-solid fa-bone text-orange-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Arthritis</p>
+                                <p class="text-xs text-gray-400">AUC 0.782</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fa-solid fa-lungs text-sky-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Asthma</p>
+                                <p class="text-xs text-gray-400">AUC 0.607</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-xs text-gray-400">
+                        <i class="fas fa-shield-halved text-orange-400 text-sm"></i>
+                        <span>CDC NHANES 2017–2020 Multi-Disease Gradient Boosting Pipeline</span>
+                    </div>
+                </div>
+
+                <!-- Results State -->
+                <div v-else class="space-y-5 fade-in">
+                    <!-- Top Summary Card -->
+                    <div class="card bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 text-white p-6 shadow-lg border-0">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="bg-white/20 text-white text-xs font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                                        Clinical Assessment
+                                    </span>
+                                    <span class="text-orange-200 text-xs sm:text-sm font-medium">ID #MV-{{ Math.abs(Math.floor(profile.age * 137 + profile.bmi * 43)) }}</span>
+                                </div>
+                                <h2 class="text-2xl sm:text-3xl font-display font-bold mt-1.5 tracking-tight">Multi-Disease Risk Profile</h2>
+                                <p class="text-orange-100 text-xs sm:text-sm mt-1">
+                                    Evaluated against 17 biomarkers &bull; {{ atRiskCount }} of 6 chronic conditions flagged as elevated
+                                </p>
+                            </div>
+
+                            <div class="flex items-center space-x-4 bg-white/10 px-4.5 py-2.5 rounded-xl border border-white/20 backdrop-blur-sm self-start sm:self-auto">
+                                <div class="text-right">
+                                    <p class="text-[11px] text-orange-200 uppercase font-semibold">Patient Profile</p>
+                                    <p class="font-bold text-base sm:text-lg leading-tight">Age {{ profile.age }} &bull; BMI {{ profile.bmi.toFixed(1) }}</p>
+                                </div>
+                                <button @click="printReport" title="Print Clinical Summary" class="bg-white text-primary hover:bg-orange-50 font-semibold px-3.5 py-2 rounded-lg shadow-sm text-xs sm:text-sm transition flex items-center space-x-1.5">
+                                    <i class="fas fa-print"></i>
+                                    <span>Print</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 Disease Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div v-for="(data, disease) in results" :key="disease" 
+                             class="card p-5 border-l-4 transition hover:-translate-y-0.5" 
+                             :class="data.is_at_risk ? 'border-danger hover:border-red-600' : 'border-success hover:border-emerald-600'">
+                            
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 border border-gray-100 overflow-hidden shadow-2xs">
+                                        <img v-if="disease === 'Heart Disease'" src="../assets/heart_disease.png" onerror="this.src='assets/heart_disease.png'" alt="Heart Disease" class="w-8 h-8 object-contain">
+                                        <i v-else :class="getDiseaseIcon(disease)" class="text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base sm:text-lg font-bold text-gray-800 leading-tight">{{ disease }}</h3>
+                                        <p class="text-xs text-gray-400">ROC-AUC: {{ getDiseaseAUC(disease) }}</p>
+                                    </div>
+                                </div>
+
+                                <span class="px-3 py-1 text-xs font-bold rounded-full tracking-wide flex items-center" 
+                                      :class="data.is_at_risk ? 'bg-red-50 text-danger border border-red-200' : 'bg-emerald-50 text-success border border-emerald-200'">
+                                    <i class="fas mr-1.5 text-[10px]" :class="data.is_at_risk ? 'fa-triangle-exclamation' : 'fa-circle-check'"></i>
+                                    {{ data.prediction }}
+                                </span>
+                            </div>
+                            
+                            <div class="flex items-baseline justify-between mb-2">
+                                <div class="flex items-baseline space-x-1.5">
+                                    <span class="text-3xl sm:text-4xl font-extrabold tracking-tight" :class="data.is_at_risk ? 'text-danger' : 'text-gray-800'">
+                                        {{ data.risk_percentage }}
+                                    </span>
+                                    <span class="text-xs sm:text-sm text-gray-400">predicted risk</span>
+                                </div>
+                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    Threshold: 50%
+                                </span>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden relative">
+                                <div class="h-2.5 rounded-full progress-bar" 
+                                     :class="data.is_at_risk ? 'bg-gradient-to-r from-orange-500 to-red-500' : 'bg-gradient-to-r from-emerald-400 to-emerald-500'" 
+                                     :style="`width: ${Math.min(data.risk_score * 100, 100)}%`">
+                                </div>
+                            </div>
+
+                            <div class="mt-2.5 flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-50">
+                                <span>Status: <strong :class="data.is_at_risk ? 'text-red-600' : 'text-emerald-700'">{{ data.is_at_risk ? 'Elevated Monitoring Required' : 'Within Expected Baseline' }}</strong></span>
+                                <span class="text-[11px] text-gray-400">Score: {{ (data.risk_score).toFixed(3) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clinical Footnote Card -->
+                    <div class="p-4 rounded-xl bg-orange-50/40 border border-orange-100 flex items-start space-x-3 text-xs sm:text-sm text-gray-600">
+                        <i class="fas fa-circle-info text-primary text-base sm:text-lg mt-0.5"></i>
+                        <p class="leading-relaxed">
+                            <strong>Interpretation Note:</strong> Risk scores reflect predicted probability derived from HistGradientBoosting models trained on 12 CDC NHANES survey modules. A probability exceeding 50% flags the individual as clinically at-risk for diagnostic follow-up.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 3: CHEST X-RAY VISION DIAGNOSTICS & GRAD-CAM -->
+        <!-- ========================================================================= -->
+        <main v-show="currentView === 'vision'" class="flex-grow max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex flex-col lg:flex-row gap-6 items-stretch fade-in">
+            
+            <!-- Left Column: Image Upload & Previews -->
+            <div class="w-full lg:w-[42%] xl:w-[40%] flex flex-col shrink-0 space-y-4">
+                
+                <div class="card border-t-4 border-primary space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-display font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-x-ray text-primary mr-2.5"></i> Chest Radiograph
+                            </h2>
+                            <p class="text-xs text-gray-500 mt-0.5">DenseNet-121 Multi-Label Deep Learning Vision</p>
+                        </div>
+                        <span class="text-xs font-semibold text-primary bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">
+                            NIH ChestX-ray14
+                        </span>
+                    </div>
+
+                    <!-- Drag & Drop Zone -->
+                    <div 
+                        @dragover.prevent="dragOver = true"
+                        @dragleave.prevent="dragOver = false"
+                        @drop.prevent="handleFileDrop"
+                        @click="triggerFileInput"
+                        :class="{'dropzone-active': dragOver}"
+                        class="border-2 border-dashed border-gray-300 hover:border-primary rounded-2xl p-6 text-center cursor-pointer transition bg-orange-50/20 hover:bg-orange-50/40 flex flex-col items-center justify-center space-y-3 group"
+                    >
+                        <input type="file" ref="xrayFileInput" @change="handleFileSelect" accept="image/*" class="hidden">
+                        
+                        <div class="w-16 h-16 rounded-full bg-orange-100/70 text-primary flex items-center justify-center text-2xl group-hover:scale-110 transition shadow-inner">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                        </div>
+                        
+                        <div>
+                            <p class="text-sm font-bold text-gray-800">Drag & drop Chest X-ray here, or <span class="text-primary underline">browse</span></p>
+                            <p class="text-xs text-gray-400 mt-1">Supports standard DICOM-converted PNG, JPEG, TIFF (Max 25 MB)</p>
+                        </div>
+                    </div>
+
+                    <!-- Built-in Sample Radiographs -->
+                    <div class="space-y-2 pt-1">
+                        <div class="flex items-center justify-between text-xs font-semibold text-gray-500">
+                            <span><i class="fas fa-flask text-primary mr-1"></i> Quick Test Clinical Presets:</span>
+                            <span class="text-[11px] text-gray-400">Click to evaluate</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button 
+                                type="button" 
+                                @click="loadSampleXray('normal_chest_xray.png')" 
+                                :disabled="visionLoading"
+                                class="pill-btn p-2 rounded-xl border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 text-emerald-800 text-xs font-semibold flex items-center space-x-2 transition text-left disabled:opacity-50"
+                            >
+                                <i class="fas fa-circle-check text-emerald-600 text-sm"></i>
+                                <div>
+                                    <div class="font-bold leading-tight">Normal Baseline</div>
+                                    <div class="text-[10px] text-emerald-600/80">Unremarkable PA</div>
+                                </div>
+                            </button>
+
+                            <button 
+                                type="button" 
+                                @click="loadSampleXray('pathology_chest_xray.png')" 
+                                :disabled="visionLoading"
+                                class="pill-btn p-2 rounded-xl border border-red-200 bg-red-50/60 hover:bg-red-100/70 text-red-800 text-xs font-semibold flex items-center space-x-2 transition text-left disabled:opacity-50"
+                            >
+                                <i class="fas fa-triangle-exclamation text-red-600 text-sm"></i>
+                                <div>
+                                    <div class="font-bold leading-tight">Pathology Case</div>
+                                    <div class="text-[10px] text-red-600/80">Cardiomegaly & Infil.</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview Card (if selected) -->
+                    <div v-if="previewUrl" class="p-3 bg-gray-50 rounded-xl border border-gray-200/80 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-image text-gray-500 text-sm"></i>
+                                <span class="text-xs font-bold text-gray-700 truncate max-w-[200px]">{{ selectedFileName || 'Chest_Xray.png' }}</span>
+                            </div>
+                            <button @click="clearSelectedImage" class="text-gray-400 hover:text-red-500 text-xs transition">
+                                <i class="fas fa-trash-can"></i> Remove
+                            </button>
+                        </div>
+                        <div class="relative rounded-lg overflow-hidden border border-gray-200 bg-black flex items-center justify-center max-h-56">
+                            <img :src="previewUrl" alt="Selected X-ray" class="max-h-56 object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="button" 
+                        @click="analyzeSelectedXray" 
+                        :disabled="!selectedFile || visionLoading" 
+                        class="w-full btn-primary text-white font-bold py-3 px-5 rounded-xl shadow-md text-sm sm:text-base flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    >
+                        <span v-if="!visionLoading"><i class="fas fa-microscope mr-2"></i> Run Deep Learning Diagnostics</span>
+                        <span v-else><i class="fas fa-circle-notch fa-spin mr-2"></i> Processing DenseNet-121 & Grad-CAM...</span>
+                    </button>
+
+                    <p v-if="visionError" class="text-danger text-xs sm:text-sm text-center font-semibold">{{ visionError }}</p>
+                </div>
+
+                <!-- Vision Architecture Information -->
+                <div class="card p-4 space-y-2 bg-white text-xs text-gray-600 border border-gray-200/70 text-left">
+                    <h4 class="font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-circle-nodes text-primary mr-1.5"></i> Neural Network Specifications
+                    </h4>
+                    <ul class="space-y-1 text-gray-500">
+                        <li>&bull; <strong>Backbone:</strong> Torchvision DenseNet-121 (ImageNet weights)</li>
+                        <li>&bull; <strong>Classifier Head:</strong> Linear(1024, 512) &rarr; ReLU &rarr; Dropout(0.2) &rarr; Linear(512, 5)</li>
+                        <li>&bull; <strong>Explainability:</strong> Grad-CAM on <code class="font-mono text-primary bg-orange-50 px-1 py-0.5 rounded">features.denseblock4</code></li>
+                        <li>&bull; <strong>Decision Policy:</strong> Validation F1-optimal operating thresholds</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Results & Grad-CAM Interpretability Studio -->
+            <div class="w-full lg:w-[58%] xl:w-[60%] lg:flex-1 flex flex-col min-w-0 space-y-5">
+                
+                <!-- Awaiting State -->
+                <div v-if="!visionResult" class="card h-full flex flex-col items-center justify-center text-center p-8 sm:p-12 border border-orange-100">
+                    <div class="w-24 h-24 rounded-2xl bg-orange-50 border-2 border-orange-200/80 p-2.5 shadow-inner flex items-center justify-center mb-6">
+                        <i class="fas fa-lungs text-primary text-4xl drop-shadow"></i>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-display font-bold text-gray-800 mb-2">Vision Diagnostic Studio Ready</h2>
+                    <p class="text-sm sm:text-base text-gray-500 max-w-lg mb-6 leading-relaxed">
+                        Upload a frontal (PA/AP) chest radiograph on the left or click <strong class="text-emerald-600 font-semibold">"Normal Baseline"</strong> or <strong class="text-red-600 font-semibold">"Pathology Case"</strong> to trigger automated multi-label pathology classification.
+                    </p>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-xl text-left mb-6">
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fas fa-heart text-red-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Cardiomegaly</p>
+                                <p class="text-[11px] text-gray-400">AUC 0.918</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fas fa-water text-sky-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Effusion</p>
+                                <p class="text-[11px] text-gray-400">AUC 0.872</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fas fa-cloud text-indigo-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Infiltration</p>
+                                <p class="text-[11px] text-gray-400">AUC 0.710</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3">
+                            <i class="fas fa-lungs text-purple-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Atelectasis</p>
+                                <p class="text-[11px] text-gray-400">AUC 0.799</p>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-xl border border-gray-100 bg-orange-50/30 flex items-center space-x-3 col-span-2 sm:col-span-1">
+                            <i class="fas fa-virus-covid text-amber-500 text-xl w-6 text-center"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm font-semibold text-gray-700">Pneumonia</p>
+                                <p class="text-[11px] text-gray-400">AUC 0.736</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-xs text-gray-400">
+                        <i class="fas fa-shield-halved text-orange-400 text-sm"></i>
+                        <span>DenseNet-121 Model with Grad-CAM Visual Attention</span>
+                    </div>
+                </div>
+
+                <!-- Vision Results State -->
+                <div v-else class="space-y-5 fade-in text-left">
+                    
+                    <!-- Top Findings Banner -->
+                    <div 
+                        class="card text-white p-6 shadow-lg border-0"
+                        :class="visionResult.has_detected_pathology ? 'bg-gradient-to-r from-red-600 via-orange-600 to-amber-600' : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700'"
+                    >
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="bg-white/20 text-white text-xs font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                                        {{ visionResult.has_detected_pathology ? 'Thoracic Pathology Detected' : 'Unremarkable Radiograph' }}
+                                    </span>
+                                    <span class="text-orange-200 text-xs sm:text-sm font-medium">DenseNet-121 Test AUROC: 0.807</span>
+                                </div>
+                                <h2 class="text-2xl sm:text-3xl font-display font-bold mt-1.5 tracking-tight">
+                                    {{ visionResult.has_detected_pathology ? 'Positive Clinical Findings Flagged' : 'No Critical Pathologies Detected' }}
+                                </h2>
+                                <p class="text-white/90 text-xs sm:text-sm mt-1 leading-relaxed max-w-2xl">
+                                    {{ visionResult.summary }}
+                                </p>
+                            </div>
+
+                            <div class="flex items-center space-x-3 bg-white/10 px-4 py-2.5 rounded-xl border border-white/20 backdrop-blur-sm self-start sm:self-auto shrink-0">
+                                <div class="text-right">
+                                    <p class="text-[10px] uppercase font-bold tracking-wider text-orange-200">Primary Finding</p>
+                                    <p class="font-extrabold text-base sm:text-lg leading-tight">{{ visionResult.primary_condition }}</p>
+                                </div>
+                                <button @click="printReport" title="Print Imaging Report" class="bg-white text-gray-800 hover:bg-orange-50 font-bold px-3 py-2 rounded-lg shadow-sm text-xs transition">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grad-CAM Interpretability Studio Card -->
+                    <div class="card p-5 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-wand-magic-sparkles text-primary mr-2"></i> Grad-CAM Interpretability Studio
+                                </h3>
+                                <p class="text-xs text-gray-500">Visual localization of neural network feature activations</p>
+                            </div>
+
+                            <!-- View Mode Switcher -->
+                            <div class="flex items-center space-x-1 bg-gray-100 p-1 rounded-xl text-xs font-bold">
+                                <button 
+                                    @click="activeOverlayView = 'overlay'" 
+                                    :class="activeOverlayView === 'overlay' ? 'bg-white text-primary shadow-xs' : 'text-gray-600 hover:text-gray-900'"
+                                    class="px-2.5 py-1.5 rounded-lg transition"
+                                >
+                                    Overlay
+                                </button>
+                                <button 
+                                    @click="activeOverlayView = 'heatmap'" 
+                                    :class="activeOverlayView === 'heatmap' ? 'bg-white text-primary shadow-xs' : 'text-gray-600 hover:text-gray-900'"
+                                    class="px-2.5 py-1.5 rounded-lg transition"
+                                >
+                                    Heatmap
+                                </button>
+                                <button 
+                                    @click="activeOverlayView = 'original'" 
+                                    :class="activeOverlayView === 'original' ? 'bg-white text-primary shadow-xs' : 'text-gray-600 hover:text-gray-900'"
+                                    class="px-2.5 py-1.5 rounded-lg transition"
+                                >
+                                    Original
+                                </button>
+                                <button 
+                                    @click="activeOverlayView = 'side-by-side'" 
+                                    :class="activeOverlayView === 'side-by-side' ? 'bg-white text-primary shadow-xs' : 'text-gray-600 hover:text-gray-900'"
+                                    class="px-2.5 py-1.5 rounded-lg transition"
+                                >
+                                    Side-by-Side
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Condition Selector Pills for Heatmap -->
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="text-xs font-semibold text-gray-400 mr-1">Condition Heatmap:</span>
+                            <button 
+                                v-for="finding in visionResult.findings" 
+                                :key="finding.condition"
+                                @click="activeCondition = finding.condition"
+                                :class="activeCondition === finding.condition ? 'bg-primary text-white shadow-xs font-bold' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold'"
+                                class="px-3 py-1 rounded-full text-xs transition flex items-center space-x-1.5"
+                            >
+                                <span class="w-1.5 h-1.5 rounded-full" :class="finding.detected ? 'bg-red-400' : 'bg-emerald-400'"></span>
+                                <span>{{ finding.condition }}</span>
+                                <span class="text-[10px] opacity-80">({{ finding.probability_pct }})</span>
+                            </button>
+                        </div>
+
+                        <!-- Image Display Canvas -->
+                        <div class="rounded-2xl overflow-hidden bg-black border border-gray-800 p-2 sm:p-4 flex items-center justify-center min-h-[340px]">
+                            <!-- Single Image View -->
+                            <div v-if="activeOverlayView !== 'side-by-side'" class="relative flex flex-col items-center">
+                                <img 
+                                    v-if="activeOverlayView === 'overlay'" 
+                                    :src="getCurrentOverlayImage" 
+                                    alt="Grad-CAM Overlay" 
+                                    class="max-h-[380px] w-auto rounded-xl shadow-2xl object-contain"
+                                >
+                                <img 
+                                    v-else-if="activeOverlayView === 'heatmap'" 
+                                    :src="getCurrentHeatmapImage" 
+                                    alt="Grad-CAM Heatmap" 
+                                    class="max-h-[380px] w-auto rounded-xl shadow-2xl object-contain"
+                                >
+                                <img 
+                                    v-else-if="activeOverlayView === 'original'" 
+                                    :src="visionResult.visualizations.original" 
+                                    alt="Original Chest X-ray" 
+                                    class="max-h-[380px] w-auto rounded-xl shadow-2xl object-contain"
+                                >
+                                
+                                <div class="mt-2 text-center text-xs text-gray-400 flex items-center space-x-2">
+                                    <span class="text-orange-400 font-semibold">{{ activeCondition }} Attention Map</span>
+                                    <span>&bull;</span>
+                                    <span>Layer: features.denseblock4</span>
+                                </div>
+                            </div>
+
+                            <!-- Side-by-Side View -->
+                            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                                <div class="flex flex-col items-center space-y-1.5">
+                                    <span class="text-xs font-semibold text-gray-300">Original Cropped Radiograph (224x224)</span>
+                                    <img :src="visionResult.visualizations.original" alt="Original" class="max-h-[300px] w-auto rounded-xl border border-gray-700 object-contain">
+                                </div>
+                                <div class="flex flex-col items-center space-y-1.5">
+                                    <span class="text-xs font-semibold text-orange-400">Grad-CAM Overlay: {{ activeCondition }}</span>
+                                    <img :src="getCurrentOverlayImage" alt="Grad-CAM" class="max-h-[300px] w-auto rounded-xl border border-gray-700 object-contain">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colormap Legend -->
+                        <div class="flex items-center justify-between text-xs text-gray-500 pt-1">
+                            <span class="text-gray-400">Attention Intensity:</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[11px] text-blue-500 font-semibold">Low (0.0)</span>
+                                <div class="w-32 h-2.5 rounded-full bg-gradient-to-r from-blue-600 via-emerald-500 via-yellow-400 to-red-600 shadow-inner"></div>
+                                <span class="text-[11px] text-red-500 font-semibold">High Focus (1.0)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5 Thoracic Condition Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div 
+                            v-for="finding in visionResult.findings" 
+                            :key="finding.condition" 
+                            class="card p-4 border-l-4 transition hover:-translate-y-0.5 cursor-pointer"
+                            :class="[
+                                finding.detected ? 'border-danger hover:border-red-600 bg-red-50/10' : 'border-success hover:border-emerald-600',
+                                activeCondition === finding.condition ? 'ring-2 ring-primary/40' : ''
+                            ]"
+                            @click="activeCondition = finding.condition"
+                        >
+                            <div class="flex justify-between items-start mb-2.5">
+                                <div class="flex items-center space-x-2.5">
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-50 border border-gray-100 shadow-2xs">
+                                        <i :class="getVisionConditionIcon(finding.condition)" class="text-base"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm sm:text-base font-bold text-gray-800 leading-tight">{{ finding.condition }}</h4>
+                                        <p class="text-[11px] text-gray-400">Test ROC-AUC: {{ finding.roc_auc || '0.80' }}</p>
+                                    </div>
+                                </div>
+
+                                <span 
+                                    class="px-2.5 py-0.5 text-xs font-bold rounded-full tracking-wide flex items-center" 
+                                    :class="finding.detected ? 'bg-red-50 text-danger border border-red-200' : 'bg-emerald-50 text-success border border-emerald-200'"
+                                >
+                                    <i class="fas mr-1 text-[9px]" :class="finding.detected ? 'fa-triangle-exclamation' : 'fa-circle-check'"></i>
+                                    {{ finding.status }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-baseline justify-between mb-1.5">
+                                <div class="flex items-baseline space-x-1.5">
+                                    <span class="text-2xl sm:text-3xl font-extrabold tracking-tight" :class="finding.detected ? 'text-danger' : 'text-gray-800'">
+                                        {{ finding.probability_pct }}
+                                    </span>
+                                    <span class="text-xs text-gray-400">model probability</span>
+                                </div>
+                                <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                                    Cutoff: {{ finding.threshold_pct }}
+                                </span>
+                            </div>
+
+                            <!-- Progress Bar with Threshold Marker -->
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden relative">
+                                <div 
+                                    class="h-2.5 rounded-full progress-bar" 
+                                    :class="finding.detected ? 'bg-gradient-to-r from-orange-500 to-red-500' : 'bg-gradient-to-r from-emerald-400 to-emerald-500'" 
+                                    :style="`width: ${Math.min(finding.confidence_pct, 100)}%`"
+                                ></div>
+                            </div>
+
+                            <div class="mt-2.5 flex justify-between items-center text-[11px] text-gray-500 pt-2 border-t border-gray-50">
+                                <span>Sens: <strong>{{ (finding.sensitivity ? (finding.sensitivity * 100).toFixed(1) + '%' : 'N/A') }}</strong> &bull; Spec: <strong>{{ (finding.specificity ? (finding.specificity * 100).toFixed(1) + '%' : 'N/A') }}</strong></span>
+                                <button @click.stop="activeCondition = finding.condition" class="text-primary hover:underline font-bold flex items-center space-x-1">
+                                    <span>Inspect Heatmap</span>
+                                    <i class="fas fa-chevron-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clinical Interpretation Card -->
+                    <div class="p-4 rounded-xl bg-orange-50/40 border border-orange-100 flex items-start space-x-3 text-xs sm:text-sm text-gray-600">
+                        <i class="fas fa-circle-info text-primary text-base sm:text-lg mt-0.5"></i>
+                        <p class="leading-relaxed">
+                            <strong>Diagnostic Interpretation Guide:</strong> Binary classifications are computed using optimal validation F1 thresholds specifically derived for each thoracic condition to balance precision and recall on imbalanced hospital datasets. Red highlights in Grad-CAM overlays represent regions with strongest gradient activations leading to model prediction.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-auto border-t border-orange-100 bg-white/70 py-5 text-center text-xs sm:text-sm text-gray-500 no-print">
+            <div class="max-w-[1440px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-2.5">
+                    <img src="../assets/MediVision - AI.png" onerror="this.src='assets/MediVision - AI.png'" alt="MediVision AI" class="h-6 w-6 object-contain">
+                    <span class="font-semibold text-gray-700">MediVision-AI Multimodal Platform</span>
+                    <span>&bull; Dual-Engine Clinical Diagnostic Suite</span>
+                </div>
+                <p>Digital Egypt Pioneers Initiative (DEPI) Graduation Project &bull; CDC NHANES & NIH ChestX-ray14</p>
+                <div class="flex items-center space-x-3">
+                    <a :href="apiBase + '/docs'" target="_blank" class="text-primary hover:underline font-semibold flex items-center">
+                        <i class="fas fa-code mr-1.5"></i> API Swagger Docs
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Floating Gemini Conversational Assistant -->
+        <button 
+            type="button" 
+            @click="chatOpen = !chatOpen" 
+            class="mv-chat-launcher" 
+            :title="chatOpen ? 'Close AI Assistant' : 'Chat with MediVision AI'" 
+            aria-label="Toggle clinical assistant chat"
+        >
+            <i class="fas" :class="chatOpen ? 'fa-xmark text-xl' : 'fa-comment-medical text-2xl'"></i>
+        </button>
+
+        <div v-show="chatOpen" class="mv-chat-panel" :dir="chatLanguage === 'ar' ? 'rtl' : 'ltr'">
+            <div class="glass-header text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                        <i class="fas fa-user-doctor text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm leading-tight">MediVision AI Assistant</h4>
+                        <p class="text-[10px] text-orange-100">Multimodal Clinical Guidance</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-1.5">
+                    <select v-model="chatLanguage" class="text-[11px] font-bold bg-white/20 text-white border-0 rounded px-1.5 py-0.5 outline-none cursor-pointer">
+                        <option value="auto" class="text-gray-800">Auto</option>
+                        <option value="en" class="text-gray-800">EN</option>
+                        <option value="ar" class="text-gray-800">العربية</option>
+                    </select>
+                    <button @click="chatOpen = false" class="text-white/80 hover:text-white text-sm px-1.5 py-0.5">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat messages box -->
+            <div ref="chatMessagesBox" class="mv-chat-messages space-y-3">
+                <div 
+                    v-for="(msg, idx) in chatMessages" 
+                    :key="idx" 
+                    class="mv-chat-bubble"
+                    :class="msg.role === 'user' ? 'mv-chat-user' : 'mv-chat-assistant'"
+                >
+                    {{ msg.content }}
+                </div>
+
+                <div v-if="chatLoading" class="mv-chat-bubble mv-chat-assistant flex items-center space-x-2 text-gray-500">
+                    <i class="fas fa-circle-notch fa-spin text-primary"></i>
+                    <span>Reviewing clinical data...</span>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-3 border-t border-orange-100 bg-white space-y-2">
+                <div class="flex items-center justify-between text-[11px] text-gray-500">
+                    <label class="flex items-center space-x-1.5 cursor-pointer">
+                        <input type="checkbox" v-model="shareHealthDataConsent" class="rounded text-primary focus:ring-primary h-3.5 w-3.5">
+                        <span>Include active findings in chat</span>
+                    </label>
+                    <span v-if="visionResult" class="text-[10px] bg-orange-100 text-primary-dark px-1.5 py-0.5 rounded font-semibold">X-ray active</span>
+                </div>
+
+                <form @submit.prevent="sendChatMessage" class="flex items-center space-x-2">
+                    <input 
+                        type="text" 
+                        v-model="chatInput" 
+                        placeholder="Ask about biomarkers, conditions, or X-rays..." 
+                        class="flex-1 text-xs py-2 px-3 border border-gray-200 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary bg-white shadow-2xs"
+                    >
+                    <button 
+                        type="submit" 
+                        :disabled="chatLoading || !chatInput.trim()" 
+                        class="btn-primary text-white p-2 rounded-xl text-xs w-9 h-9 flex items-center justify-center disabled:opacity-50"
+                    >
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <p v-if="chatError" class="text-[11px] text-red-500 text-center font-medium">{{ chatError }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        const { createApp } = Vue;
+
+        // Rock-solid API Base Resolver for both local file:// and HTTP servers
+        function resolveApiBase() {
+            // 1. Direct file opening file:///
+            if (window.location.protocol === 'file:' || !window.location.hostname) {
+                return 'http://localhost:8000';
+            }
+            // 2. Direct FastAPI backend delivery on port 8000
+            if (window.location.port === '8000') {
+                return window.location.origin;
+            }
+            // 3. Local dev servers (port 3000, 5500, etc.)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return 'http://localhost:8000';
+            }
+            // 4. Remote origin
+            if (window.location.origin && window.location.origin !== 'null') {
+                return window.location.origin;
+            }
+            return 'http://localhost:8000';
+        }
+
+        createApp({
+            data() {
+                const apiBase = resolveApiBase();
+
+                return {
+                    apiBase,
+                    backendConnected: null, // null = checking, true = connected, false = disconnected
+                    backendStatus: null,
+                    currentView: 'landing', // 'landing' | 'tabular' | 'vision'
+                    
+                    // Tabular State
+                    loading: false,
+                    error: null,
+                    form: {
+                        age: 55,
+                        gender: 1,
+                        ethnicity: 3,
+                        height_cm: 175,
+                        weight_kg: 88,
+                        bmi: 28.7,
+                        waist_cm: 98,
+                        hba1c: 6.2,
+                        fasting_glucose: 115,
+                        total_cholesterol: 220,
+                        hdl: 42,
+                        triglycerides: 180,
+                        ldl: 142,
+                        ever_smoked: 1,
+                        sedentary_minutes: 420,
+                        education: 3,
+                        income_poverty_ratio: 1.8
+                    },
+                    results: null,
+                    profile: { age: 55, bmi: 28.7 },
+
+                    // Vision State
+                    visionLoading: false,
+                    visionError: null,
+                    dragOver: false,
+                    selectedFile: null,
+                    selectedFileName: '',
+                    previewUrl: null,
+                    visionResult: null,
+                    activeCondition: 'Cardiomegaly',
+                    activeOverlayView: 'overlay', // 'overlay' | 'heatmap' | 'original' | 'side-by-side'
+
+                    // Chat State
+                    chatOpen: false,
+                    chatInput: '',
+                    chatLoading: false,
+                    chatError: '',
+                    chatLanguage: 'auto',
+                    shareHealthDataConsent: true,
+                    chatMessages: [
+                        {
+                            role: 'assistant',
+                            content: 'Hello, I am the MediVision AI clinical assistant. You can ask me to explain patient biomarker risks, discuss thoracic pathologies on Chest X-rays, or clarify Grad-CAM visual heatmaps. How can I assist you today?'
+                        }
+                    ]
+                };
+            },
+            computed: {
+                bmiCategory() {
+                    const b = this.form.bmi;
+                    if (!b || b <= 0) return '';
+                    if (b < 18.5) return 'Underweight';
+                    if (b < 25) return 'Normal';
+                    if (b < 30) return 'Overweight';
+                    return 'Obese';
+                },
+                bmiBadgeClass() {
+                    const b = this.form.bmi;
+                    if (!b || b <= 0) return 'bg-gray-100 text-gray-700';
+                    if (b < 18.5) return 'bg-amber-100 text-amber-800';
+                    if (b < 25) return 'bg-emerald-100 text-emerald-800';
+                    if (b < 30) return 'bg-orange-100 text-orange-800';
+                    return 'bg-red-100 text-red-800';
+                },
+                atRiskCount() {
+                    if (!this.results) return 0;
+                    return Object.values(this.results).filter(r => r.is_at_risk).length;
+                },
+                getCurrentOverlayImage() {
+                    if (!this.visionResult || !this.visionResult.visualizations) return '';
+                    const overlays = this.visionResult.visualizations.overlays_by_condition || {};
+                    return overlays[this.activeCondition] || this.visionResult.visualizations.overlay || '';
+                },
+                getCurrentHeatmapImage() {
+                    if (!this.visionResult || !this.visionResult.visualizations) return '';
+                    const heatmaps = this.visionResult.visualizations.heatmaps_by_condition || {};
+                    return heatmaps[this.activeCondition] || this.visionResult.visualizations.heatmap || '';
+                }
+            },
+            methods: {
+                async checkBackendStatus() {
+                    this.backendConnected = null;
+                    try {
+                        const resp = await fetch(`${this.apiBase}/`, { method: 'GET' });
+                        if (resp.ok) {
+                            const data = await resp.json();
+                            this.backendConnected = true;
+                            this.backendStatus = data;
+                        } else {
+                            this.backendConnected = false;
+                        }
+                    } catch (e) {
+                        this.backendConnected = false;
+                        console.warn('Backend not detected at', this.apiBase, e);
+                    }
+                },
+                calcBMI() {
+                    if (this.form.height_cm > 0 && this.form.weight_kg > 0) {
+                        const h = this.form.height_cm / 100;
+                        this.form.bmi = parseFloat((this.form.weight_kg / (h * h)).toFixed(1));
+                    }
+                },
+                fillSampleData() {
+                    // High-Risk Patient Profile
+                    this.form = {
+                        age: 64,
+                        gender: 1,
+                        ethnicity: 4,
+                        height_cm: 172,
+                        weight_kg: 104,
+                        bmi: 35.2,
+                        waist_cm: 112,
+                        hba1c: 8.4,
+                        fasting_glucose: 168,
+                        total_cholesterol: 260,
+                        hdl: 34,
+                        triglycerides: 280,
+                        ldl: 170,
+                        ever_smoked: 1,
+                        sedentary_minutes: 540,
+                        education: 3,
+                        income_poverty_ratio: 1.2
+                    };
+                    this.calcBMI();
+                },
+                fillHealthyData() {
+                    // Healthy Baseline Profile
+                    this.form = {
+                        age: 32,
+                        gender: 1,
+                        ethnicity: 3,
+                        height_cm: 178,
+                        weight_kg: 72,
+                        bmi: 22.7,
+                        waist_cm: 82,
+                        hba1c: 5.1,
+                        fasting_glucose: 88,
+                        total_cholesterol: 175,
+                        hdl: 58,
+                        triglycerides: 95,
+                        ldl: 98,
+                        ever_smoked: 2,
+                        sedentary_minutes: 180,
+                        education: 5,
+                        income_poverty_ratio: 3.8
+                    };
+                    this.calcBMI();
+                },
+                getDiseaseIcon(disease) {
+                    const icons = {
+                        'Diabetes': 'fa-solid fa-droplet text-amber-500',
+                        'Hypertension': 'fa-solid fa-heart-pulse text-rose-500',
+                        'Heart Disease': 'fa-solid fa-heart-circle-bolt text-red-600',
+                        'Stroke': 'fa-solid fa-brain text-purple-600',
+                        'Arthritis': 'fa-solid fa-bone text-orange-500',
+                        'Asthma': 'fa-solid fa-lungs text-sky-500'
+                    };
+                    return icons[disease] || 'fa-solid fa-notes-medical text-primary';
+                },
+                getDiseaseAUC(disease) {
+                    const aucMap = {
+                        'Diabetes': '0.934',
+                        'Hypertension': '0.811',
+                        'Heart Disease': '0.810',
+                        'Stroke': '0.784',
+                        'Arthritis': '0.782',
+                        'Asthma': '0.607'
+                    };
+                    return aucMap[disease] || '0.800';
+                },
+                getVisionConditionIcon(cond) {
+                    const icons = {
+                        'Cardiomegaly': 'fas fa-heart text-red-500',
+                        'Pneumonia': 'fas fa-virus-covid text-amber-500',
+                        'Effusion': 'fas fa-water text-sky-500',
+                        'Infiltration': 'fas fa-cloud text-indigo-500',
+                        'Atelectasis': 'fas fa-lungs text-purple-500'
+                    };
+                    return icons[cond] || 'fas fa-disease text-primary';
+                },
+                printReport() {
+                    window.print();
+                },
+                async submitPrediction() {
+                    this.loading = true;
+                    this.error = null;
+                    if (this.form.age <= 0) {
+                        this.error = "Age must be a positive number.";
+                        this.loading = false;
+                        return;
+                    }
+                    try {
+                        const response = await fetch(`${this.apiBase}/predict`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(this.form)
+                        });
+                        const data = await response.json();
+                        if (!response.ok || data.error) {
+                            throw new Error(data.error || 'Server error occurred during predictive inference.');
+                        }
+                        this.results = data.predictions;
+                        this.profile = data.patient_profile;
+                        this.backendConnected = true;
+                    } catch (err) {
+                        this.backendConnected = false;
+                        this.error = err.message || `Failed to connect to backend at ${this.apiBase}. Is start_backend.bat running?`;
+                        console.error('Prediction error:', err);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                // Vision Methods
+                triggerFileInput() {
+                    if (this.$refs.xrayFileInput) {
+                        this.$refs.xrayFileInput.click();
+                    }
+                },
+                handleFileSelect(event) {
+                    const files = event.target.files;
+                    if (files && files[0]) {
+                        this.processImageFile(files[0]);
+                    }
+                },
+                handleFileDrop(event) {
+                    this.dragOver = false;
+                    const files = event.dataTransfer.files;
+                    if (files && files[0]) {
+                        this.processImageFile(files[0]);
+                    }
+                },
+                processImageFile(file) {
+                    this.selectedFile = file;
+                    this.selectedFileName = file.name;
+                    this.visionError = null;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.previewUrl = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                },
+                clearSelectedImage() {
+                    this.selectedFile = null;
+                    this.selectedFileName = '';
+                    this.previewUrl = null;
+                    this.visionResult = null;
+                    if (this.$refs.xrayFileInput) {
+                        this.$refs.xrayFileInput.value = '';
+                    }
+                },
+                async loadSampleXray(sampleFilename) {
+                    this.visionLoading = true;
+                    this.visionError = null;
+                    try {
+                        const url = `${this.apiBase}/api/vision/samples/${sampleFilename}`;
+                        const resp = await fetch(url);
+                        if (!resp.ok) throw new Error(`Could not load sample image: ${sampleFilename}`);
+                        const blob = await resp.blob();
+                        const file = new File([blob], sampleFilename, { type: 'image/png' });
+                        this.processImageFile(file);
+                        await this.analyzeSelectedXray();
+                        this.backendConnected = true;
+                    } catch (err) {
+                        this.visionError = err.message || `Failed to load sample image. Is the backend running at ${this.apiBase}?`;
+                        console.error('Sample loading error:', err);
+                    } finally {
+                        this.visionLoading = false;
+                    }
+                },
+                async analyzeSelectedXray() {
+                    if (!this.selectedFile) {
+                        this.visionError = "Please select or drop a Chest X-ray image first.";
+                        return;
+                    }
+                    this.visionLoading = true;
+                    this.visionError = null;
+
+                    const formData = new FormData();
+                    formData.append('file', this.selectedFile);
+
+                    try {
+                        const resp = await fetch(`${this.apiBase}/api/vision/predict-chest-xray`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await resp.json();
+                        if (!resp.ok) {
+                            throw new Error(data.detail || 'Vision diagnostic analysis failed.');
+                        }
+                        this.visionResult = data;
+                        this.activeCondition = data.primary_condition || 'Cardiomegaly';
+                        this.activeOverlayView = 'overlay';
+                        this.backendConnected = true;
+                    } catch (err) {
+                        this.visionError = err.message || `Failed to connect to vision service at ${this.apiBase}. Please verify start_backend.bat is running.`;
+                        console.error('Vision analysis error:', err);
+                    } finally {
+                        this.visionLoading = false;
+                    }
+                },
+
+                // Chat Assistant
+                async sendChatMessage() {
+                    const message = this.chatInput.trim();
+                    if (!message || this.chatLoading) return;
+
+                    this.chatError = '';
+                    this.chatInput = '';
+                    const history = this.chatMessages.slice(-10).map(item => ({
+                        role: item.role,
+                        content: item.content
+                    }));
+                    this.chatMessages.push({ role: 'user', content: message });
+
+                    const includeData = this.shareHealthDataConsent;
+                    const payload = {
+                        message,
+                        language: this.chatLanguage,
+                        history,
+                        profile: (includeData && this.results) ? { ...this.form } : null,
+                        consent_to_send_health_data: includeData,
+                        vision_findings: (includeData && this.visionResult) ? {
+                            primary_condition: this.visionResult.primary_condition,
+                            detected_conditions: this.visionResult.detected_conditions,
+                            findings: this.visionResult.findings.map(f => ({
+                                condition: f.condition,
+                                probability: f.probability_pct,
+                                threshold: f.threshold_pct,
+                                detected: f.detected
+                            }))
+                        } : null
+                    };
+
+                    this.chatLoading = true;
+                    try {
+                        const response = await fetch(`${this.apiBase}/chat`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const data = await response.json().catch(() => ({}));
+                        if (!response.ok) {
+                            let detailMsg = data.detail;
+                            if (Array.isArray(detailMsg)) detailMsg = detailMsg.map(d => d.msg || JSON.stringify(d)).join(', ');
+                            else if (typeof detailMsg === 'object' && detailMsg !== null) detailMsg = JSON.stringify(detailMsg);
+                            throw new Error(detailMsg || 'The AI assistant could not respond. Please try again.');
+                        }
+                        if (!data.reply) throw new Error('The assistant returned an empty response.');
+                        this.chatMessages.push({ role: 'assistant', content: data.reply });
+                    } catch (err) {
+                        this.chatError = err.message || `Could not connect to the backend assistant at ${this.apiBase}.`;
+                    } finally {
+                        this.chatLoading = false;
+                        this.$nextTick(() => {
+                            const box = this.$refs.chatMessagesBox;
+                            if (box) box.scrollTop = box.scrollHeight;
+                        });
+                    }
+                }
+            },
+            mounted() {
+                this.calcBMI();
+                this.checkBackendStatus();
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
