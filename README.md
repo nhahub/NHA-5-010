@@ -25,6 +25,54 @@
 
 ---
 
+## 📂 Project Directory Structure
+
+```text
+MediVision-AI/
+├── assets/
+│   ├── MediVision - AI.png                    # Project branding logo
+│   ├── heart_disease.png                      # Cardiovascular medical illustration
+│   └── samples/
+│       ├── normal_chest_xray.png              # Normal baseline radiograph sample
+│       └── pathology_chest_xray.png           # Thoracic pathology radiograph sample
+├── backend/
+│   ├── src/
+│   │   └── backend/
+│   │       ├── __init__.py                    # Backend package scaffold
+│   │       └── vision.py                      # DenseNet-121 inference & Grad-CAM engine
+│   ├── main.py                                # FastAPI REST microservice & static router
+│   ├── pyproject.toml                         # Project metadata & uv dependency spec
+│   ├── requirements.txt                       # Backend service runtime dependencies
+│   └── uv.lock                                # Dependency lock file
+├── data/
+│   ├── raw/                                   # CDC NHANES survey .XPT data
+│   └── processed/                             # Processed clinical datasets
+├── frontend/
+│   └── index.html                             # Vue 3 + Tailwind CSS multimodal interface
+├── models/
+│   ├── trained_models.joblib                  # Serialized HistGradientBoosting models
+│   ├── selected_features.joblib               # Pre-selected tabular feature names
+│   └── chest_xray/
+│       ├── chest_xray_densenet121.pth         # PyTorch DenseNet-121 model weights
+│       ├── chest_xray_densenet121_metadata.json # Vision config & validation F1 thresholds
+│       └── chest_xray_densenet121_metrics.json  # Evaluation metrics on test set
+├── notebooks/
+│   ├── 01_MediVision_Predictive_Health_Analytics.ipynb # Tabular ML training pipeline
+│   ├── 02_MediVision_Chest_Xray_Vision_Pipeline.ipynb  # Chest X-ray vision pipeline (Kaggle)
+│   └── NOTEBOOK_GUIDE.md                      # Guide for training notebooks
+├── reports/
+│   └── nhanes_dataset_report.pdf              # Exploratory data analysis report
+├── .env.example                               # Environment variables template
+├── Literature Review.md                       # Academic & clinical literature review
+├── Project Planning & Management.md           # Project roadmap, milestones & sprint tasks
+├── Requirements Gathering.md                  # Functional & non-functional requirements
+├── start_backend.bat                          # One-click Windows startup script
+├── requirements.txt                           # Full project requirements
+└── README.md                                  # Complete documentation
+```
+
+---
+
 ## 📌 Executive Summary
 
 **MediVision-AI** is a clinical-grade multimodal artificial intelligence platform engineered to assist physicians, clinical researchers, and healthcare providers in proactive, data-driven patient risk assessment and radiological screening.
@@ -270,48 +318,6 @@ The frontend is a single-page application built with **Vue.js 3**, **Tailwind CS
      - Condition risk cards showing detection badge, probability, and optimal F1 cutoff.
 4. **Floating AI Clinical Assistant**:
    - Persistent across all views with bilingual Arabic (RTL) and English support.
-
----
-
-## 📂 Project Directory Structure
-
-```text
-MediVision-AI/
-├── assets/
-│   ├── MediVision - AI.png                    # Project branding logo
-│   ├── heart_disease.png                      # Cardiovascular medical illustration
-│   └── samples/
-│       ├── normal_chest_xray.png              # Normal baseline radiograph sample
-│       └── pathology_chest_xray.png           # Thoracic pathology radiograph sample
-├── backend/
-│   ├── src/
-│   │   └── backend/
-│   │       ├── __init__.py                    # Backend package scaffold
-│   │       └── vision.py                      # DenseNet-121 inference & Grad-CAM engine
-│   ├── main.py                                # FastAPI REST microservice & static router
-│   ├── pyproject.toml                         # Project metadata & uv dependency spec
-│   ├── requirements.txt                       # Backend service runtime dependencies
-│   └── uv.lock                                # Dependency lock file
-├── data/
-│   ├── raw/                                   # CDC NHANES survey .XPT data
-│   └── processed/                             # Processed clinical datasets
-├── frontend/
-│   └── index.html                             # Vue 3 + Tailwind CSS multimodal interface
-├── models/
-│   ├── trained_models.joblib                  # Serialized HistGradientBoosting models
-│   ├── selected_features.joblib               # Pre-selected tabular feature names
-│   └── chest_xray/
-│       ├── chest_xray_densenet121.pth         # PyTorch DenseNet-121 model weights
-│       ├── chest_xray_densenet121_metadata.json # Vision config & validation F1 thresholds
-│       └── chest_xray_densenet121_metrics.json  # Evaluation metrics on test set
-├── notebooks/
-│   ├── 01_MediVision_Predictive_Health_Analytics.ipynb # Tabular ML training pipeline
-│   ├── 02_MediVision_Chest_Xray_Vision_Pipeline.ipynb  # Chest X-ray vision pipeline (Kaggle)
-│   └── NOTEBOOK_GUIDE.md                      # Guide for training notebooks
-├── start_backend.bat                          # One-click Windows startup script
-├── requirements.txt                           # Full project requirements
-└── README.md                                  # Complete documentation
-```
 
 ---
 
