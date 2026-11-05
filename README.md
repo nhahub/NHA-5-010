@@ -40,12 +40,15 @@ MediVision-AI/
 │   │   └── backend/
 │   │       ├── __init__.py                    # Backend package scaffold
 │   │       └── vision.py                      # DenseNet-121 inference & Grad-CAM engine
+│   ├── .env.example                           # Backend environment variables template
+│   ├── .python-version                        # Pinned Python runtime version
 │   ├── main.py                                # FastAPI REST microservice & static router
 │   ├── pyproject.toml                         # Project metadata & uv dependency spec
+│   ├── README.md                              # Backend service documentation
 │   ├── requirements.txt                       # Backend service runtime dependencies
 │   └── uv.lock                                # Dependency lock file
 ├── data/
-│   ├── raw/                                   # CDC NHANES survey .XPT data
+│   ├── raw/                                   # CDC NHANES 2017–2020 survey .XPT data
 │   └── processed/                             # Processed clinical datasets
 ├── frontend/
 │   └── index.html                             # Vue 3 + Tailwind CSS multimodal interface
@@ -63,12 +66,14 @@ MediVision-AI/
 ├── reports/
 │   └── nhanes_dataset_report.pdf              # Exploratory data analysis report
 ├── .env.example                               # Environment variables template
+├── .gitignore                                 # Git ignore rules
 ├── Literature Review.md                       # Academic & clinical literature review
 ├── Project Planning & Management.md           # Project roadmap, milestones & sprint tasks
 ├── Requirements Gathering.md                  # Functional & non-functional requirements
-├── start_backend.bat                          # One-click Windows startup script
+├── System Analysis & Design.md                # System architecture, UML & design decisions
+├── README.md                                  # Complete documentation
 ├── requirements.txt                           # Full project requirements
-└── README.md                                  # Complete documentation
+└── start_backend.bat                          # One-click Windows startup script
 ```
 
 ---
